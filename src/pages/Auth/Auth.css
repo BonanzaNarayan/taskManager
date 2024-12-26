@@ -1,0 +1,56 @@
+.authSec{
+    display: flex;
+}
+.right{
+    background-image: linear-gradient(
+        #0000ff59, #0000ffa8
+    ),url(../../assets/img.jpg);
+    background-position: center;
+    background-size: cover;
+    width: 50%;
+    height: 100vh;
+}
+.auth{
+    width: 50%;
+    height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.signIn{
+    padding: 10px;
+    border: 0;
+    min-width: 200px;
+    border-radius: 16px;
+    font-size: 18px;
+    margin: 20px;
+    border: 2px solid blue;
+    cursor: pointer;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 18px;
+    letter-spacing: 3px;
+}
+.signIn:hover{
+    background: blue;
+    color: white;
+    transition: 0.25s;
+}
+.content h1{
+    color: blue;
+    font-size: 24px;
+}
+
+@media screen and (max-width: 600px){
+    .auth{
+        width: 100%;
+    }
+    .right{
+        display: none;
+    }
+}

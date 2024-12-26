@@ -1,0 +1,90 @@
+nav{
+    left: 0;
+    top: 0;
+    height: 10vh;
+    padding: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.status{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+.status .linksNav{
+    border: 0;
+    padding: 5px;
+    font-size: 1.2rem;
+    border-radius: 6px;
+    width: 5rem;
+    color: blue;
+    text-align: center;
+    background: rgb(238, 238, 238);
+}
+.linksNav.active{
+    background: blue;
+    color: white;
+}
+.status .linksNav:hover{
+    background: blue;
+    color: white;
+    transition: 0.25s;
+}
+.flter ul{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    list-style: none;
+    font-size: 16px;
+    font-weight: 500;
+    background: rgb(230, 230, 230);
+    padding: 10px;
+    border-radius: 8px;
+}
+.flter ul .link{
+    background: white;
+    padding: 5px;
+    border-radius: 8px;
+    width: 5rem;
+    text-align: center;
+    cursor: pointer;
+    text-decoration: none;
+    color: #272727;
+}
+.flter ul .link:hover{
+    background: rgb(91, 91, 255);
+    color: rgb(255, 255, 255);
+    transition: 0.3s;
+}
+.flter ul .link.active{
+    background: blue;
+    color: white;
+    transition: 0.3s;
+}
+@media screen and (max-width: 800px){
+    nav{
+        flex-direction: column;
+        height: inherit;
+        gap: 10px;
+    }
+}
+@media screen and (max-width: 700px) {
+    nav{
+        flex-direction: column;
+        height: inherit;
+        gap: 10px;
+    }
+    .flter ul{
+        gap: 5px;
+    }
+    .flter ul .link{
+        width: 4;
+    }
+    .status{
+        gap: 10px;
+    }
+}

@@ -1,0 +1,13 @@
+.toast{
+    padding: 10px;
+    box-shadow: 2px 2px 5px black;
+    position: absolute;
+    right: 0;
+    bottom: 10px;
+    margin-right: 20px;
+    min-width: 11rem;
+    background: white;
+    font-size: 16px;
+    font-weight: 500;
+    border-left: solid 5px green;
+}

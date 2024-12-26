@@ -1,0 +1,144 @@
+.task{
+    margin-top: 10px;
+    width: 350px;
+    background: white;
+    padding: 5px;
+    /* box-shadow: 10px -10px 0 rgb(255, 19, 58); */
+    border-radius: 8px;
+    display: grid;
+    gap: 10px;
+}
+.taskReal{
+    background: rgba(236, 236, 236, 0.425);
+    line-height: 24px;
+    padding: 5px;
+    border-radius: 8px;
+    color: #2b2b2b;
+}
+.detailes{
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 10px;
+    font-style: italic;
+    font-weight: 500;
+}
+.detailes span{
+    font-size: 0.8rem;
+    color: #4e4e4e;
+}
+.actions{
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    gap: 10px;
+    font-size: 1.1rem;
+    margin-right: 10px;
+}
+.star{
+    cursor: pointer;
+    color: red;
+    /* filter: drop-shadow(2px 2px 5px rgb(255, 230, 0)); */
+}
+.edit{
+    color: blue;
+    cursor: pointer;
+}
+.delete{
+    color: rgb(255, 40, 40);
+    cursor: pointer;
+}
+.complete{
+    color: rgb(9, 175, 9);
+    cursor: pointer;
+}
+.editeCon{
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.548);
+}
+.closeEdite{
+    margin-top: 10px;
+    font-size: 2rem;
+    background: blue;
+    border: 2px solid blue;
+    border-radius: 50px;
+    color: white;
+    cursor: pointer;
+}
+
+
+.editForm{
+    position: relative;
+    margin-top: 30px;
+    display: grid;
+    background: white;
+    padding: 10px;
+    border-radius: 18px;
+    border: 2px blue solid;
+    font-size: 16px;
+    overflow: auto;
+}
+.editForm input{
+    padding: 10px;
+    width: 30rem;
+    border: 0;
+    background: #e2e2e2;
+    border-radius: 18px;
+}
+.editForm textarea{
+    height: 40vh;
+    background: #e2e2e2;
+    border-radius: 18px;
+    border: 0;
+    resize: none;
+    font-size: 16px;
+    padding: 10px;
+}
+.editForm button{
+    padding: 10px;
+    border: 0;
+    background: blue;
+    color: white;
+    font-size: 16px;
+    border-radius: 18px;
+    font-weight: 500;
+    margin-top: 10px;
+    cursor: pointer;
+}
+.editForm label{
+    color: gray;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+.editForm select{
+    padding: 5px;
+    border-radius: 18px;
+    background: #e2e2e2;
+    font-size: 16px;
+    border: 0;
+}
+.editForm div{
+    padding: 10px;
+    background: rgb(100, 100, 100);
+    border-radius: 18px;
+    margin-top: 5px;
+}
+
+@media screen and (max-width: 700px){
+    .editForm{
+        width: 90%;
+    }
+    .editForm input{
+        width: 100%;
+    }
+    .task{
+        width: 320px;
+    }
+}

@@ -1,0 +1,65 @@
+form{
+    position: relative;
+    margin-top: 30px;
+    display: grid;
+    background: white;
+    padding: 10px;
+    border-radius: 18px;
+    border: 2px blue solid;
+    font-size: 16px;
+    overflow: auto;
+}
+form input{
+    padding: 10px;
+    width: 30rem;
+    border: 0;
+    background: #e2e2e2;
+    border-radius: 18px;
+}
+form textarea{
+    height: 40vh;
+    background: #e2e2e2;
+    border-radius: 18px;
+    border: 0;
+    resize: none;
+    font-size: 16px;
+    padding: 10px;
+}
+form button{
+    padding: 10px;
+    border: 0;
+    background: blue;
+    color: white;
+    font-size: 16px;
+    border-radius: 18px;
+    font-weight: 500;
+    margin-top: 10px;
+    cursor: pointer;
+}
+form label{
+    color: gray;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+form select{
+    padding: 5px;
+    border-radius: 18px;
+    background: #e2e2e2;
+    font-size: 16px;
+    border: 0;
+}
+form div{
+    padding: 10px;
+    background: rgb(100, 100, 100);
+    border-radius: 18px;
+    margin-top: 5px;
+}
+
+@media screen and (max-width: 700px){
+    form{
+        width: 90%;
+    }
+    form input{
+        width: 100%;
+    }
+}
