@@ -141,7 +141,7 @@ function Task({name, task, date, time, color, deleteDoc, id}) {
                     <option value="High">High</option>
                 </select>
 
-                <label htmlFor="date">Due Date</label>
+                {/* <label htmlFor="date">Due Date</label>
                 <input 
                 type="date" 
                 id='date' 
@@ -155,7 +155,7 @@ function Task({name, task, date, time, color, deleteDoc, id}) {
                 id='time' 
                 required
                 onChange={(e)=>setUpdateTaskTime(e.target.value)}
-                />
+                /> */}
 
                 <label htmlFor="color">Task Color</label>
                 <input type="color" required id='color' onChange={(e)=>setUpdateColor(e.target.value)} />
