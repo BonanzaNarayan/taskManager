@@ -56,40 +56,40 @@ function Task({name, task, date, time, color, deleteDoc, id}) {
   }
 
   
-    const [like, setLike] = useState(false)
-    const handleFavorite = async (id) => {
-      setLike(!like)
-      try{
-        const docRef = doc(listRef, id)
-        await updateDoc(docRef, {
-          isFavorite: !like
-        })
-      }
-      catch(err){
-        console.error(err)
-      }
-      finally{
-        console.log("Liked State")
-      }
+  const [like, setLike] = useState(false)
+  const handleFavorite = async (id) => {
+    setLike(!like)
+    try{
+      const docRef = doc(listRef, id)
+      await updateDoc(docRef, {
+        isFavorite: !like
+      })
+    }
+    catch(err){
+      console.error(err)
+    }
+    finally{
+      console.log("Liked State")
+    }
 
-    };
+  };
 
-    const [complete, setComplete] = useState(false)
-    const handleCompletion = async (id) => {
-        setComplete(!complete)
-      try{
-        const docRefC = doc(listRef, id)
-        await updateDoc(docRefC, {
-          comepleted: !complete
-        })
-      }
-      catch(err){
-        console.error(err)
-      }
-      finally{
-        console.log("Liked State")
-      }
-    };
+  const [complete, setComplete] = useState(false)
+  const handleCompletion = async (id) => {
+      setComplete(!complete)
+    try{
+      const docRefC = doc(listRef, id)
+      await updateDoc(docRefC, {
+        comepleted: !complete
+      })
+    }
+    catch(err){
+      console.error(err)
+    }
+    finally{
+      console.log("Liked State")
+    }
+  };
 
 
 
