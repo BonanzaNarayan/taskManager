@@ -14,84 +14,85 @@ import { FaCheckCircle } from "react-icons/fa";
 function Task({name, task, date, time, color, deleteDoc, id}) {
 
 
-    const [taskUpdateName, setUpdateTaskName] = useState("")
-    const [taskUpdate, setUpdateTask] = useState("")
-    const [taskUpdatePriority, setUpdateTaskPriority] = useState("")
-    const [taskUpdateDate, setUpdateTaskDate] = useState("")
-    const [taskUpdatetime, setUpdateTaskTime] = useState("")
-    const [colorUpdate, setUpdateColor] = useState('')
+  const [taskUpdateName, setUpdateTaskName] = useState("")
+  const [taskUpdate, setUpdateTask] = useState("")
+  const [taskUpdatePriority, setUpdateTaskPriority] = useState("")
+  const [taskUpdateDate, setUpdateTaskDate] = useState("")
+  const [taskUpdatetime, setUpdateTaskTime] = useState("")
+  const [colorUpdate, setUpdateColor] = useState('')
 
-    const editeRef = useRef()
-    const listRef = collection(db, 'tasks')
+  const editeRef = useRef()
+  const listRef = collection(db, 'tasks')
 
-    const editBtn = ()=>{
-        editeRef.current.style.display = 'flex'
+  const editBtn = ()=>{
+    editeRef.current.style.display = 'flex'
+  }
+
+  const closeEdite = ()=>{
+    editeRef.current.style.display = 'none'
+  }
+
+
+  const updateTask = async(id)=>{
+    const movieDoc = doc(listRef, id)
+    try{
+      await updateDoc(movieDoc, {
+          taskName: taskUpdateName,
+          task: taskUpdate,
+          priority: taskUpdatePriority,
+          date: taskUpdateDate,
+          time: taskUpdatetime,
+          color: colorUpdate,
+          userID: auth?.currentUser?.displayName
+      })
     }
-
-    const closeEdite = ()=>{
-        editeRef.current.style.display = 'none'
+    catch(err){
+      console.error(err)
     }
+    finally{
+      console.log("Update Complete Sir!!")
+      editeRef.current.style.display = 'none'
+    }
+  }
+
+  
+    const [like, setLike] = useState(false)
+    const handleFavorite = async (id) => {
+      setLike(!like)
+      try{
+        const docRef = doc(listRef, id)
+        await updateDoc(docRef, {
+          isFavorite: !like
+        })
+      }
+      catch(err){
+        console.error(err)
+      }
+      finally{
+        console.log("Liked State")
+      }
+
+    };
+
+    const [complete, setComplete] = useState(false)
+    const handleCompletion = async (id) => {
+        setComplete(!complete)
+      try{
+        const docRefC = doc(listRef, id)
+        await updateDoc(docRefC, {
+          comepleted: !complete
+        })
+      }
+      catch(err){
+        console.error(err)
+      }
+      finally{
+        console.log("Liked State")
+      }
+    };
 
 
-        const updateTask = async(id)=>{
-          const movieDoc = doc(listRef, id)
-          try{
-            await updateDoc(movieDoc, {
-                taskName: taskUpdateName,
-                task: taskUpdate,
-                priority: taskUpdatePriority,
-                date: taskUpdateDate,
-                time: taskUpdatetime,
-                color: colorUpdate,
-                userID: auth?.currentUser?.displayName
-            })
-          }
-          catch(err){
-            console.error(err)
-          }
-          finally{
-            console.log("Update Complete Sir!!")
-            editeRef.current.style.display = 'none'
-          }
-        }
 
-        
-          const [like, setLike] = useState(false)
-          const handleFavorite = async (id) => {
-
-            setLike(!like)
-            try{
-              const docRef = doc(listRef, id)
-              await updateDoc(docRef, {
-                isFavorite: !like
-              })
-            }
-            catch(err){
-              console.error(err)
-            }
-            finally{
-              console.log("Liked State")
-            }
-
-          };
-
-          const [complete, setComplete] = useState(false)
-          const handleCompletion = async (id) => {
-            setComplete(!complete)
-            try{
-              const docRefC = doc(listRef, id)
-              await updateDoc(docRefC, {
-                comepleted: !complete
-              })
-            }
-            catch(err){
-              console.error(err)
-            }
-            finally{
-              console.log("Liked State")
-            }
-
-          };
 
   return (
     <div className='task' style={{boxShadow: `10px 10px 0 ${color}`}}>
@@ -104,8 +105,18 @@ function Task({name, task, date, time, color, deleteDoc, id}) {
             <span>{time}</span>
         </div>
         <div className='actions'>
-            <FaCheckCircle onClick={()=>handleCompletion(id)}  className='complete' style={{color: complete ? "green" : "grey"}}/>
-            <FaHeart onClick={()=>handleFavorite(id)} className='star' style={{color: like ? "red" : "grey"}} />
+            <FaCheckCircle 
+              onClick={()=>handleCompletion(id)}  
+              className='complete' 
+              style={{color: complete ? "green" : "grey"}}
+            />
+
+            <FaHeart 
+              onClick={()=>handleFavorite(id)} 
+              className='star' 
+              style={{color: like ? "red" : "grey"}} 
+            />
+
             <BiEdit className='edit' onClick={editBtn}/>
             <FaTrashCan className='delete' onClick={()=>deleteDoc(id)}/>
         </div>
