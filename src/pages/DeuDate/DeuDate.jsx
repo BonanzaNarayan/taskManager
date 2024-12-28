@@ -1,6 +1,6 @@
 import Header from "../../components/Header/Header"
 import Nav from "../../components/Nav/Nav"
-import './Home.css'
+// import './Home.css'
 import Task from "../../components/Task/Task"
 
 import { auth, db } from "../../config/firebaseConfig"
@@ -10,10 +10,7 @@ import { useEffect, useState } from "react"
 import Toast from "../../components/Toast/Toast"
 import Preloader from "../../components/Preloader/Preloader"
 
-import { redirect } from "../../hooks/authRedirect"
-
-function Home() {
-  redirect()
+function DeuDate() {
   
 
   const [task, setTaskList] = useState([])
@@ -26,8 +23,12 @@ function Home() {
   //Fetching Task
   useEffect(()=>{
     const getTaskList = async ()=>{
+        const today = new Date().toISOString().split("T")[0];
       try{
-        const data =  query(taskCollection, where('userID', '==', `${auth?.currentUser?.uid}`))
+        const data =  query(taskCollection, 
+            where('userID', '==', `${auth?.currentUser?.uid}`),
+            where("date", "<=", today)
+        )
         const finalData = await getDocs(data)
         const fiiData = finalData.docs.map((doc)=>({...doc.data(), id: doc.id}))
         setTaskList(fiiData)
@@ -83,7 +84,7 @@ function Home() {
                 date={taskList.date} 
                 time={taskList.time} 
                 color={taskList.color}  
-                delectDoc={deleteTask} 
+                deleteDoc={deleteTask} 
                 id={taskList.id}
                 />
               ))
@@ -99,4 +100,4 @@ function Home() {
   )
 }
 
-export default Home
+export default DeuDate

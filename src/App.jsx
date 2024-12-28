@@ -7,6 +7,7 @@ import Auth from "./pages/Auth/Auth"
 import Completed from "./pages/Completed/Completed"
 import Pending from "./pages/Pending/Pending"
 import Favorite from "./pages/Favorite/Favorite"
+import DeuDate from "./pages/DeuDate/DeuDate"
 import { ActionsContextProvider } from "./context/ActionContext"
 // import { LikeProvider } from "./context/likeContext"
 
@@ -25,6 +26,7 @@ function App() {
               <Route path="completed" element={<Completed />} />
               <Route path="pending" element={<Pending />} />
               <Route path="favorites" element={<Favorite />} />
+              <Route path="dueDate" element={<DeuDate />} />
           </Routes>
           </ActionsContextProvider>
       </main>

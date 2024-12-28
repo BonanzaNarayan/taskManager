@@ -8,12 +8,23 @@ import { useNavigate } from 'react-router-dom'
 
 function Form() {
 
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
+
+
+  const handleDateChange = (e) => {
+    const today = new Date().toISOString().split("T")[0];
+    if (e.target.value < today) {
+      alert("You can't select a past date.");
+    } else {
+      setTaskDate(e.target.value);
+    }
+  };
+
 
   const [taskName, setTaskName] = useState("")
   const [task, setTask] = useState("")
   const [taskPriority, setTaskPriority] = useState("")
-  // const [taskDate, setTaskDate] = useState("")
+  const [taskDate, setTaskDate] = useState("")
   // const [tasktime, setTaskTime] = useState("")
   const [color, setColor] = useState('')
 
@@ -46,6 +57,7 @@ function Form() {
         task: task,
         priority: taskPriority,
         date: fullDate,
+        dueDate: taskDate,
         time: fullTime,
         color: color,
         userID: auth?.currentUser?.uid,
@@ -92,15 +104,16 @@ function Form() {
             <option value="High">High</option>
         </select>
 
-        {/* <label htmlFor="date">Due Date</label>
+        <label htmlFor="date">Due Date</label>
         <input 
         type="date" 
         id='date' 
         required
-        onChange={(e)=>setTaskDate(e.target.value)}
+        value={taskDate}
+        onChange={handleDateChange}
         />
 
-        <label htmlFor="time">Due Time</label>
+        {/* <label htmlFor="time">Due Time</label>
         <input 
         type="time" 
         id='time' 

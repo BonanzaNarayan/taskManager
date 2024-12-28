@@ -1,26 +1,35 @@
-import { SlStar } from 'react-icons/sl'
 import './Task.css'
 import { FaTrashCan } from 'react-icons/fa6'
-import { BiCheckCircle, BiEdit } from 'react-icons/bi'
+import { BiEdit } from 'react-icons/bi'
 // import Edite from '../Form/Edite'
 import { CgClose } from 'react-icons/cg'
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 
-import { collection, doc, Firestore, getDocs, updateDoc }from 'firebase/firestore'
+import { collection, doc,  updateDoc }from 'firebase/firestore'
 import { auth, db } from '../../config/firebaseConfig'
 import { FaHeart } from "react-icons/fa";
 import { FaCheckCircle } from "react-icons/fa";
-import { ActionsContext } from '../../context/ActionContext'
 
-function Task({name, task, date, time, color, deleteDoc, id}) {
+function Task({name, task, date, time, color, delectDoc, id}) {
 
 
   const [taskUpdateName, setUpdateTaskName] = useState("")
   const [taskUpdate, setUpdateTask] = useState("")
   const [taskUpdatePriority, setUpdateTaskPriority] = useState("")
   const [taskUpdateDate, setUpdateTaskDate] = useState("")
-  const [taskUpdatetime, setUpdateTaskTime] = useState("")
+  // const [taskUpdatetime, setUpdateTaskTime] = useState("")
   const [colorUpdate, setUpdateColor] = useState('')
+
+  // const [taskDate, setTaskDate] = useState("")
+
+  const handleDateChange = (e) => {
+    const today = new Date().toISOString().split("T")[0];
+    if (e.target.value < today) {
+      alert("You can't select a past date.");
+    } else {
+      setUpdateTaskDate(e.target.value);
+    }
+  };
 
   const editeRef = useRef()
   const listRef = collection(db, 'tasks')
@@ -33,6 +42,21 @@ function Task({name, task, date, time, color, deleteDoc, id}) {
     editeRef.current.style.display = 'none'
   }
 
+  const dateNew = new Date()
+  // console.log(date)
+  const newYear = dateNew.getFullYear()
+  const newDate = dateNew.getDate()
+  const newMonth = dateNew.getMonth() + 1
+
+  const newHour = dateNew.getHours()
+  const newMinute = dateNew.getMinutes()
+
+  const fullDate = `${newDate}-${newMonth}-${newYear}`
+  // console.log(fullDate)
+
+  const fullTime = `${newHour}:${newMinute}`
+  // console.log(fullTime)
+
 
   const updateTask = async(id)=>{
     const movieDoc = doc(listRef, id)
@@ -41,10 +65,11 @@ function Task({name, task, date, time, color, deleteDoc, id}) {
           taskName: taskUpdateName,
           task: taskUpdate,
           priority: taskUpdatePriority,
-          date: taskUpdateDate,
-          time: taskUpdatetime,
+          date: fullDate,
+          time: fullTime,
+          dueDate: taskUpdateDate,
           color: colorUpdate,
-          userID: auth?.currentUser?.displayName
+          userID: auth?.currentUser?.uid
       })
     }
     catch(err){
@@ -56,44 +81,44 @@ function Task({name, task, date, time, color, deleteDoc, id}) {
     }
   }
 
-  const {like, complete, handleCompletion, handleFavorite } = useContext(ActionsContext)
-
   
-  // const [like, setLike] = useState(false)
-  // const handleFavorite = async (id) => {
-  //   setLike(!like)
-  //   try{
-  //     const docRef = doc(listRef, id)
-  //     await updateDoc(docRef, {
-  //       isFavorite: !like
-  //     })
-  //   }
-  //   catch(err){
-  //     console.error(err)
-  //   }
-  //   finally{
-  //     console.log("Liked State")
-  //   }
+  const [like, setLike] = useState(false)
+  const handleFavorite = async (id) => {
+    setLike(!like)
+    try{
+      const docRef = doc(listRef, id)
+      await updateDoc(docRef, {
+        isFavorite: !like
+      })
+    }
+    catch(err){
+      console.error(err)
+    }
+    finally{
+      console.log("Liked State")
+    }
 
-  // };
+  };
 
-  // //Completion
-  // const [complete, setComplete] = useState(false)
-  // const handleCompletion = async (id) => {
-  //     setComplete(!complete)
-  //   try{
-  //     const docRefC = doc(listRef, id)
-  //     await updateDoc(docRefC, {
-  //       comepleted: !complete
-  //     })
-  //   }
-  //   catch(err){
-  //     console.error(err)
-  //   }
-  //   finally{
-  //     console.log("Liked State")
-  //   }
-  // };
+  //Completion
+  const [complete, setComplete] = useState(false)
+  const handleCompletion = async (id) => {
+      setComplete(!complete)
+    try{
+      const docRefC = doc(listRef, id)
+      await updateDoc(docRefC, {
+        comepleted: !complete
+      })
+    }
+    catch(err){
+      console.error(err)
+    }
+    finally{
+      console.log("Liked State")
+    }
+  };
+
+
 
 
 
@@ -122,7 +147,7 @@ function Task({name, task, date, time, color, deleteDoc, id}) {
             />
 
             <BiEdit className='edit' onClick={editBtn}/>
-            <FaTrashCan className='delete' onClick={()=>deleteDoc(id)}/>
+            <FaTrashCan className='delete' onClick={()=>delectDoc(id)}/>
         </div>
 
         <div className="editeCon" ref={editeRef}>
@@ -156,15 +181,15 @@ function Task({name, task, date, time, color, deleteDoc, id}) {
                     <option value="High">High</option>
                 </select>
 
-                {/* <label htmlFor="date">Due Date</label>
+                <label htmlFor="date">Due Date</label>
                 <input 
                 type="date" 
                 id='date' 
                 required
-                onChange={(e)=>setUpdateTaskDate(e.target.value)}
+                onChange={handleDateChange}
                 />
 
-                <label htmlFor="time">Due Time</label>
+                {/* <label htmlFor="time">Due Time</label>
                 <input 
                 type="time" 
                 id='time' 

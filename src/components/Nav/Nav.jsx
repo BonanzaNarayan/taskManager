@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { BiStar } from 'react-icons/bi'
 import { Link, useLocation } from 'react-router-dom'
 import { FaCheckCircle, FaHeart } from 'react-icons/fa'
+import { FcOvertime } from 'react-icons/fc'
 
 
 
@@ -31,6 +32,9 @@ function Nav() {
             </Link>
             <Link to="/favorites" className={isActive("/favorites") ? "linksNav active": "linksNav"}>
                 <FaHeart />
+            </Link>
+            <Link to="/dueDate" className={isActive("/deuDate") ? "linksNav active": "linksNav"}>
+                <FcOvertime />
             </Link>
         </ul>
 
