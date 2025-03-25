@@ -8,29 +8,21 @@ import Completed from "./pages/Completed/Completed"
 import Pending from "./pages/Pending/Pending"
 import Favorite from "./pages/Favorite/Favorite"
 import DeuDate from "./pages/DeuDate/DeuDate"
-import { ActionsContextProvider } from "./context/ActionContext"
-// import { LikeProvider } from "./context/likeContext"
 
 function App() {
 
   return (
-    <>
-      <main>
-      <ActionsContextProvider>
-          <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="low" element={<LowP />} />
-              <Route path="medium" element={<Medium />} />
-              <Route path="high" element={<High />} />
-              <Route path="signin" element={<Auth />} />
-              <Route path="completed" element={<Completed />} />
-              <Route path="pending" element={<Pending />} />
-              <Route path="favorites" element={<Favorite />} />
-              <Route path="dueDate" element={<DeuDate />} />
-          </Routes>
-          </ActionsContextProvider>
-      </main>
-    </>
+    <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="low" element={<LowP />} />
+        <Route path="medium" element={<Medium />} />
+        <Route path="high" element={<High />} />
+        <Route path="signin" element={<Auth />} />
+        <Route path="completed" element={<Completed />} />
+        <Route path="pending" element={<Pending />} />
+        <Route path="favorites" element={<Favorite />} />
+        <Route path="dueDate" element={<DeuDate />} />
+    </Routes>
   )
 }
 

@@ -2,84 +2,116 @@ import { useEffect, useState } from 'react'
 import Header from '../../components/Header/Header'
 import Nav from '../../components/Nav/Nav'
 import { auth, db } from '../../config/firebaseConfig'
-// import './Lowp.css'
-
-import { collection, deleteDoc, getDocs, query, where } from 'firebase/firestore'
+import { collection, deleteDoc, doc, onSnapshot, query, where } from 'firebase/firestore'
+import { motion, AnimatePresence } from 'framer-motion'
+import toast from 'react-hot-toast'
 import Task from '../../components/Task/Task'
-import Preloader from '../../components/Preloader/Preloader'
-
-
+import SkeletonLoader from '../../components/SkeletonLoader'
 
 function Medium() {
+  const [tasks, setTasks] = useState([])
+  const [loading, setLoading] = useState(true)
+  const tasksCollection = collection(db, "tasks")
 
-    const [task, setTask] = useState([])
-    const collectionTask = collection(db, "tasks")
+  // Real-time data fetching
+  useEffect(() => {
+    setLoading(true)
+    const q = query(
+      tasksCollection,
+      where('priority', '==', 'Medium'),
+      where('userID', '==', `${auth?.currentUser?.uid}`)
+    )
 
-    const [loading, setLoading] = useState(true)
-
-    useEffect(()=>{
-        const lowData = async ()=>{
-            try{
-                const quaryData = query(collectionTask, 
-                  where('priority', '==', 'Medium'),
-                  where('userID', '==', `${auth?.currentUser?.uid}`)
-                )
-
-                const finalFilterData = await getDocs(quaryData)
-    
-                const fullData = finalFilterData.docs.map((doc)=>({...doc.data(), id: doc.id}))
-    
-                console.log(fullData)
-                setTask(fullData)
-
-                setLoading(true)
-            }
-            catch(err){
-                console.error(err)
-            }
-            finally{
-                console.log("Data Fetched complete Sir!!")
-                setLoading(false)
-            }
-        }
-        lowData()
-    },[])
-
-      const deleteTask = async(id)=>{
-        const movieDoc = doc(db, "tasks", id)
-        try{
-          await deleteDoc(movieDoc)
-        }
-        catch(err){
-          console.error(err)
-        }
-        finally{
-          console.log("Delete Complete Sir!!")
-        }
+    const unsubscribe = onSnapshot(q, 
+      (snapshot) => {
+        const tasksData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        setTasks(tasksData)
+        setLoading(false)
+      },
+      (error) => {
+        toast.error('Error loading medium priority tasks')
+        console.error(error)
+        setLoading(false)
       }
+    )
+
+    return () => unsubscribe()
+  }, [])
+
+  // Delete task handler
+  const handleDeleteTask = async (id) => {
+    try {
+      await deleteDoc(doc(db, "tasks", id))
+      toast.success('Task deleted successfully')
+      setTasks(prev => prev.filter(task => task.id !== id))
+    } catch (error) {
+      toast.error('Failed to delete task')
+      console.error(error)
+    }
+  }
+
   return (
-    <div>
-        <Header />
-        <Nav />
-        <div className="home">
-            <div className="taskList">
-            {
-                loading ? <Preloader />:
-                task.map((taskList, key)=>(
-                    <Task 
-                    key={key} 
-                    name={taskList.taskName} 
-                    task={taskList.task} 
-                    date={taskList.date} 
-                    time={taskList.time} 
-                    color={taskList.color}  
-                    deleteDoc={deleteTask} 
-                    id={taskList.id}
-                    />
-                  ))
-            }
-            </div>
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <Nav />
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">Medium Priority Tasks</h1>
+        
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <SkeletonLoader key={i} />
+            ))}
+          </div>
+        ) : (
+          <AnimatePresence>
+            {tasks.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-12"
+              >
+                <div className="max-w-md mx-auto">
+                  <div className="text-gray-400 text-6xl mb-4">📝</div>
+                  <h3 className="text-xl font-medium text-gray-900 mb-2">
+                    No medium priority tasks
+                  </h3>
+                  <p className="text-gray-500">
+                    Tasks marked as medium priority will appear here
+                  </p>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                layout
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
+                <AnimatePresence>
+                  {tasks.map((task) => (
+                    <motion.div
+                      key={task.id}
+                      layout
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Task
+                        data={task}
+                        deleteDoc={handleDeleteTask}
+                      />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
+      </main>
     </div>
   )
 }

@@ -1,210 +1,225 @@
-import './Task.css'
-import { FaTrashCan } from 'react-icons/fa6'
+import { useState, useEffect } from 'react'
+import { FaTrashAlt, FaRegHeart, FaHeart, FaCheckCircle, FaRegCheckCircle } from 'react-icons/fa'
 import { BiEdit } from 'react-icons/bi'
-// import Edite from '../Form/Edite'
-import { CgClose } from 'react-icons/cg'
-import { useContext, useRef, useState } from 'react'
+import { doc, updateDoc } from 'firebase/firestore'
+import { db } from '../../config/firebaseConfig'
+import { motion, AnimatePresence } from 'framer-motion'
+import toast from 'react-hot-toast'
 
-import { collection, doc,  updateDoc }from 'firebase/firestore'
-import { auth, db } from '../../config/firebaseConfig'
-import { FaHeart } from "react-icons/fa";
-import { FaCheckCircle } from "react-icons/fa";
+function Task({ data, deleteDoc, id }) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [formData, setFormData] = useState({
+    taskName: data?.taskName,
+    task: data?.task,
+    priority: data?.priority,
+    dueDate: data?.dueDate,
+    color: data?.color
+  })
 
-function Task({name, task, date, time, color, delectDoc, id}) {
-
-
-  const [taskUpdateName, setUpdateTaskName] = useState("")
-  const [taskUpdate, setUpdateTask] = useState("")
-  const [taskUpdatePriority, setUpdateTaskPriority] = useState("")
-  const [taskUpdateDate, setUpdateTaskDate] = useState("")
-  // const [taskUpdatetime, setUpdateTaskTime] = useState("")
-  const [colorUpdate, setUpdateColor] = useState('')
-
-  // const [taskDate, setTaskDate] = useState("")
+  useEffect(() => {
+    setFormData({
+      taskName: data?.taskName,
+      task: data?.task,
+      priority: data?.priority,
+      dueDate: data?.dueDate,
+      color: data?.color
+    })
+  }, [data])
 
   const handleDateChange = (e) => {
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toISOString().split('T')[0]
     if (e.target.value < today) {
-      alert("You can't select a past date.");
-    } else {
-      setUpdateTaskDate(e.target.value);
+      toast.error("Can't select past dates")
+      return
     }
-  };
-
-  const editeRef = useRef()
-  const listRef = collection(db, 'tasks')
-
-  const editBtn = ()=>{
-    editeRef.current.style.display = 'flex'
+    setFormData({ ...formData, dueDate: e.target.value })
   }
 
-  const closeEdite = ()=>{
-    editeRef.current.style.display = 'none'
-  }
-
-  const dateNew = new Date()
-  // console.log(date)
-  const newYear = dateNew.getFullYear()
-  const newDate = dateNew.getDate()
-  const newMonth = dateNew.getMonth() + 1
-
-  const newHour = dateNew.getHours()
-  const newMinute = dateNew.getMinutes()
-
-  const fullDate = `${newDate}-${newMonth}-${newYear}`
-  // console.log(fullDate)
-
-  const fullTime = `${newHour}:${newMinute}`
-  // console.log(fullTime)
-
-
-  const updateTask = async(id)=>{
-    const movieDoc = doc(listRef, id)
-    try{
-      await updateDoc(movieDoc, {
-          taskName: taskUpdateName,
-          task: taskUpdate,
-          priority: taskUpdatePriority,
-          date: fullDate,
-          time: fullTime,
-          dueDate: taskUpdateDate,
-          color: colorUpdate,
-          userID: auth?.currentUser?.uid
-      })
-    }
-    catch(err){
+  const updateTask = async (id) => {
+    try {
+      await updateDoc(doc(db, "tasks", id), formData)
+      toast.success('Task updated successfully!')
+      setIsEditing(false)
+    } catch (err) {
+      toast.error('Failed to update task')
       console.error(err)
     }
-    finally{
-      console.log("Update Complete Sir!!")
-      editeRef.current.style.display = 'none'
-    }
   }
 
-  
-  const [like, setLike] = useState(false)
   const handleFavorite = async (id) => {
-    setLike(!like)
-    try{
-      const docRef = doc(listRef, id)
-      await updateDoc(docRef, {
-        isFavorite: !like
+    try {
+      await updateDoc(doc(db, "tasks", id), {
+        isFavorite: !data.isFavorite
       })
-    }
-    catch(err){
+    } catch (err) {
+      toast.error('Failed to update favorite')
       console.error(err)
     }
-    finally{
-      console.log("Liked State")
-    }
+  }
 
-  };
-
-  //Completion
-  const [complete, setComplete] = useState(false)
   const handleCompletion = async (id) => {
-      setComplete(!complete)
-    try{
-      const docRefC = doc(listRef, id)
-      await updateDoc(docRefC, {
-        comepleted: !complete
+    try {
+      await updateDoc(doc(db, "tasks", id), {
+        completed: !data.completed
       })
-    }
-    catch(err){
+    } catch (err) {
+      toast.error('Failed to update completion')
       console.error(err)
     }
-    finally{
-      console.log("Liked State")
-    }
-  };
-
-
-
-
-
+  }
 
   return (
-    <div className='task' style={{boxShadow: `10px 10px 0 ${color}`}}>
-        <b>{name}</b>
-        <div className='taskReal'>
-            {task}
-        </div>
-        <div className='detailes'>
-            <span>{date}</span>
-            <span>{time}</span>
-        </div>
-        <div className='actions'>
-            <FaCheckCircle 
-              onClick={()=>handleCompletion(id)}  
-              className='complete' 
-              style={{color: complete ? "green" : "grey"}}
-            />
-
-            <FaHeart 
-              onClick={()=>handleFavorite(id)} 
-              className='star' 
-              style={{color: like ? "red" : "grey"}} 
-            />
-
-            <BiEdit className='edit' onClick={editBtn}/>
-            <FaTrashCan className='delete' onClick={()=>delectDoc(id)}/>
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      className="relative bg-white rounded-xl shadow-md p-6 transition-all"
+      style={{ borderLeft: `8px solid ${data?.color}` }}
+    >
+      {/* Task Content */}
+      <div className={`${data?.completed ? 'opacity-50' : ''}`}>
+        <div className="flex justify-between items-start mb-4">
+          <h3 className="text-lg font-semibold text-gray-800">{data?.taskName}</h3>
+          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+            data?.priority === 'High' ? 'bg-red-100 text-red-600' :
+            data?.priority === 'Medium' ? 'bg-yellow-100 text-yellow-600' :
+            'bg-green-100 text-green-600'
+          }`}>
+            {data?.priority}
+          </span>
         </div>
 
-        <div className="editeCon" ref={editeRef}>
-            <CgClose className='closeEdite' onClick={closeEdite}/>
+        <p className="text-gray-600 mb-4">{data?.task}</p>
 
-            {/* Edit Task */}
-            <div className='editForm' style={{border: `${colorUpdate} 2px solid`}}>
-                <label htmlFor="taskName">Task Name</label>
-                <input 
-                type="text" 
-                id='taskName' 
-                placeholder="task name..." 
-                onChange={(e)=>setUpdateTaskName(e.target.value)}
-                />
+        <div className="flex justify-between items-center text-sm text-gray-500">
+          <div>
+            <p>Created: {data?.date}</p>
+            {data?.dueDate && <p>Due: {data?.dueDate}</p>}
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => handleCompletion(data?.id)}
+              className="text-xl text-gray-400 hover:text-green-600 transition-colors"
+            >
+              {data?.completed ? <FaCheckCircle dclassName="text-green-500" /> : <FaRegCheckCircle />}
+            </button>
+            <button
+              onClick={() => handleFavorite(data?.id)}
+              className="text-xl text-gray-400 hover:text-red-500 transition-colors"
+            >
+              {data?.isFavorite ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
+            </button>
+            <button
+              onClick={() => setIsEditing(true)}
+              className="text-xl text-gray-400 hover:text-blue-600 transition-colors"
+            >
+              <BiEdit />
+            </button>
+            <button
+              onClick={() => deleteDoc(data.id)}
+              className="text-xl text-gray-400 hover:text-red-600 transition-colors"
+            >
+              <FaTrashAlt />
+            </button>
+          </div>
+        </div>
+      </div>
 
-                <label htmlFor="task">Task</label>
-                <textarea 
-                id='task' 
-                placeholder='add something...' 
-                required
-                onChange={(e)=>setUpdateTask(e.target.value)}
-                ></textarea>
+      {/* Edit Modal */}
+<AnimatePresence>
+  {isEditing && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={() => setIsEditing(false)}
+    >
+      <motion.div
+        initial={{ scale: 0.95 }}
+        animate={{ scale: 1 }}
+        exit={{ scale: 0.95 }}
+        className="bg-white rounded-xl w-full max-w-md mx-4 shadow-xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center p-4 md:p-6 border-b">
+          <h3 className="text-lg md:text-xl font-semibold">Edit Task</h3>
+          <button
+            onClick={() => setIsEditing(false)}
+            className="p-2 hover:bg-gray-100 rounded-full text-xl md:text-base"
+          >
+            <span className="sr-only">Close</span>
+            ✕
+          </button>
+        </div>
 
-                <label htmlFor="Priority">Priority</label>
-                <select name="" id="Priority"
-                onChange={(e)=>setUpdateTaskPriority(e.target.value)}
-                required>
-                    <option value="" hidden>Priority</option>
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
-                </select>
-
-                <label htmlFor="date">Due Date</label>
-                <input 
-                type="date" 
-                id='date' 
-                required
-                onChange={handleDateChange}
-                />
-
-                {/* <label htmlFor="time">Due Time</label>
-                <input 
-                type="time" 
-                id='time' 
-                required
-                onChange={(e)=>setUpdateTaskTime(e.target.value)}
-                /> */}
-
-                <label htmlFor="color">Task Color</label>
-                <input type="color" required id='color' onChange={(e)=>setUpdateColor(e.target.value)} />
-                <div style={{background: `${colorUpdate}`}}></div>
-                
-                <button onClick={()=>updateTask(id)} type="submit">Edite Task</button>
+        <div className="overflow-y-auto max-h-[75vh] p-4 md:p-6">
+          <div className="space-y-4 md:space-y-6">
+            <div>
+              <label className="block text-sm md:text-base font-medium mb-2">Task Name</label>
+              <input
+                value={formData.taskName}
+                onChange={(e) => setFormData({ ...formData, taskName: e.target.value })}
+                className="w-full px-3 md:px-4 py-2 text-sm md:text-base border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
+
+            <div>
+              <label className="block text-sm md:text-base font-medium mb-2">Description</label>
+              <textarea
+                value={formData.task}
+                onChange={(e) => setFormData({ ...formData, task: e.target.value })}
+                className="w-full px-3 md:px-4 py-2 text-sm md:text-base border rounded-lg focus:ring-2 focus:ring-blue-500 h-32 md:h-24"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm md:text-base font-medium mb-2">Priority</label>
+              <select
+                value={formData.priority}
+                onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                className="w-full px-3 md:px-4 py-2 text-sm md:text-base border rounded-lg focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm md:text-base font-medium mb-2">Due Date</label>
+              <input
+                type="date"
+                value={formData.dueDate}
+                onChange={handleDateChange}
+                className="w-full px-3 md:px-4 py-2 text-sm md:text-base border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm md:text-base font-medium mb-2">Color</label>
+              <input
+                type="color"
+                value={formData.color}
+                onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                className="w-full h-12 md:h-10 cursor-pointer rounded-lg"
+              />
+            </div>
+
+            <button
+              onClick={() => updateTask(data.id)}
+              className="w-full bg-blue-600 text-white py-3 md:py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm md:text-base"
+            >
+              Save Changes
+            </button>
+          </div>
         </div>
-    </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
+    </motion.div>
   )
 }
 
